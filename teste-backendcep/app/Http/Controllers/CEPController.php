@@ -16,7 +16,7 @@ class CEPController extends Controller
         $array = $this->trataParametros($request->array);
         foreach ($array as $value) {        
             $result = Http::accept('application/json')->get("https://viacep.com.br/ws/". $value ."/json/")->json();
-            if($result !=null){
+            if($result !=null && !isset($result["erro"])){
                 /*Grava histórico da consulta*/
                 $cep = new Cep(array());
                 $this->persisteCEP($cep, $result);
@@ -29,7 +29,7 @@ class CEPController extends Controller
         usort($data, function($a, $b) { 
             return $a->label < $b->label ? -1 : 1; 
         }); 
-
+        
         return response()->json($data,200,['Content-type'=>'application/json;charset=utf-8'],JSON_UNESCAPED_UNICODE);
     }
 
